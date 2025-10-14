@@ -1,25 +1,60 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
 import gradio as gr
-from Pages.main_page import main_page
-from Pages.Functions.auth_functions import auth_function
-from Pages.registration_page import registration
+from .Functions.video_player_functions import youtube_link_to_id, get_video_embed_by_id, get_video_link_by_pointer
+from .Functions.caption_editor_functions import get_captions_by_video_id, save_dataframe
+from .Resources.css import css
 
-app = FastAPI()
-MAIN_PATH = "/caption_editor"
-REGISTRATION_PATH = "/registration"
-
-index_html = f'''
-<div>
-<iframe src={MAIN_PATH} width=100% height=100% frameBorder="0"></iframe>
-</div>
-'''
+next_video_pointer = 0
+user = ""
 
 
-@app.get("/", response_class=HTMLResponse)
-def index():
-    return index_html
+def get_username(request: gr.Request):
+    global user
+    user = request.username
 
 
-app = gr.mount_gradio_app(app, main_page, path=MAIN_PATH, auth=auth_function)
-app = gr.mount_gradio_app(app, registration, path=REGISTRATION_PATH)
+def save(df, video_id):
+    return save_dataframe(df, video_id, user)
+
+
+def get_next_components():
+    global next_video_pointer
+    next_video_link = get_video_link_by_pointer(next_video_pointer)
+    next_video_pointer += 1
+    if next_video_link is None:
+        next_video_link = get_video_link_by_pointer(0)
+        next_video_pointer = 1
+
+    next_video_id = youtube_link_to_id(next_video_link)
+
+    next_video = get_video_embed_by_id(next_video_id)
+    next_captions = get_captions_by_video_id(next_video_id)
+
+    return next_video, next_captions, next_video_id
+
+
+(start_video, start_captions, start_video_id) = get_next_components()
+
+with gr.Blocks(css=css) as main_page:
+    gr.Markdown("## Caption Editor")
+    current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
+    with gr.Row():
+        with gr.Column():
+            caption_editor = gr.DataFrame(interactive=True,
+                                          value=start_captions,
+                                          datatype=["number", "str", "number"],
+                                          row_count=(start_captions.shape[0], "fixed"),
+                                          col_count=(3, "fixed"), column_widths=["20%", "60%", "20%"])
+            save_button = gr.Button(value="Save")
+            save_result = gr.Markdown()
+        with gr.Column():
+            video_embed = gr.HTML(value=start_video)
+            next_video_button = gr.Button("Next")
+
+    next_video_button.click(fn=get_next_components,
+                            outputs=[video_embed, caption_editor, current_video_id])
+    save_button.click(fn=save,
+                      inputs=[caption_editor, current_video_id],
+                      outputs=save_result)
+    main_page.load(get_username)
+
+main_page.launch()
