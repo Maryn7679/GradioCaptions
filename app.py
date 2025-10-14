@@ -57,4 +57,5 @@ with gr.Blocks(css=css) as main_page:
                       outputs=save_result)
     main_page.load(get_username)
 
-main_page.launch(auth=[("admin", "pass123"), ("sample_user", "1stpassword23"), ("testenko", "testenko543")])
+main_page.launch(auth=[("admin", "pass123"), ("sample_user", "1stpassword23"), ("testenko", "testenko543")],
+                 share=True, ssr_mode=False)
