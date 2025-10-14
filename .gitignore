@@ -89,5 +89,6 @@ Resources/upload.py
 Resources/users.json
 Resources/videos.json
 Resources/captions_backup.jsonl
+Resources/writetoken1.txt
 venv
 **/__pycache__
