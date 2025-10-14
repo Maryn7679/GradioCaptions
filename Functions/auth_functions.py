@@ -1,6 +1,6 @@
-from ..Resources.salt import salt
+from Resources.salt import salt
 import hashlib
-from .db_connection import users_ref, get_user_ref
+from db_connection import users_ref, get_user_ref
 
 
 def encrypt(password):
