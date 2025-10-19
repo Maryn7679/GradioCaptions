@@ -10,7 +10,7 @@ user = ""
 def get_username(profile: gr.OAuthProfile):
     global user
     user = profile.username
-    return profile.username
+    return profile
 
 
 def save(df, video_id):
@@ -36,28 +36,37 @@ def get_next_components():
 (start_video, start_captions, start_video_id) = get_next_components()
 
 with gr.Blocks(css=css) as main_page:
-    gr.Markdown("## Caption Editor")
-    gr.LoginButton()
-    m1 = gr.Markdown()
-    current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
-    with gr.Row():
-        with gr.Column():
-            caption_editor = gr.DataFrame(interactive=True,
-                                          value=start_captions,
-                                          datatype=["number", "str", "number"],
-                                          row_count=(start_captions.shape[0], "fixed"),
-                                          col_count=(3, "fixed"), column_widths=["20%", "60%", "20%"])
-            save_button = gr.Button(value="Save")
-            save_result = gr.Markdown()
-        with gr.Column():
-            video_embed = gr.HTML(value=start_video)
-            next_video_button = gr.Button("Next")
+    gr.Markdown("# Caption Editor")
 
-    next_video_button.click(fn=get_next_components,
-                            outputs=[video_embed, caption_editor, current_video_id])
-    save_button.click(fn=save,
-                      inputs=[caption_editor, current_video_id],
-                      outputs=save_result)
-    main_page.load(get_username, outputs=m1)
+    gr.LoginButton()
+
+    current_user = gr.Textbox(visible=False, interactive=False)
+    current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
+
+    main_page.load(get_username, outputs=current_user)
+
+    @gr.render(inputs=current_user)
+    def render_page(logged_in_user):
+        if logged_in_user is None:
+            gr.Markdown("## Please log in via Hugging Face")
+        else:
+            with gr.Row():
+                with gr.Column():
+                    caption_editor = gr.DataFrame(interactive=True,
+                                                  value=start_captions,
+                                                  datatype=["number", "str", "number"],
+                                                  row_count=(start_captions.shape[0], "fixed"),
+                                                  col_count=(3, "fixed"), column_widths=["20%", "60%", "20%"])
+                    save_button = gr.Button(value="Save")
+                    save_result = gr.Markdown()
+                with gr.Column():
+                    video_embed = gr.HTML(value=start_video)
+                    next_video_button = gr.Button("Next")
+
+            next_video_button.click(fn=get_next_components,
+                                    outputs=[video_embed, caption_editor, current_video_id])
+            save_button.click(fn=save,
+                              inputs=[caption_editor, current_video_id],
+                              outputs=save_result)
 
 main_page.launch(share=True, ssr_mode=False)
