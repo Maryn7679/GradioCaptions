@@ -7,9 +7,10 @@ next_video_pointer = 0
 user = ""
 
 
-def get_username(request: gr.Request):
+def get_username(profile: gr.OAuthProfile):
     global user
-    user = request.username
+    user = profile.name
+    return profile.name
 
 
 def save(df, video_id):
@@ -36,6 +37,8 @@ def get_next_components():
 
 with gr.Blocks(css=css) as main_page:
     gr.Markdown("## Caption Editor")
+    gr.LoginButton()
+    m1 = gr.Markdown()
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
     with gr.Row():
         with gr.Column():
@@ -55,7 +58,6 @@ with gr.Blocks(css=css) as main_page:
     save_button.click(fn=save,
                       inputs=[caption_editor, current_video_id],
                       outputs=save_result)
-    main_page.load(get_username)
+    main_page.load(get_username, outputs=m1)
 
-main_page.launch(auth=[("admin", "pass123"), ("sample_user", "1stpassword23"), ("testenko", "testenko543")],
-                 share=True, ssr_mode=False)
+main_page.launch(share=True, ssr_mode=False)
