@@ -9,8 +9,8 @@ user = ""
 
 def get_username(profile: gr.OAuthProfile):
     global user
-    user = profile.name
-    return profile.name
+    user = profile.username
+    return profile.username
 
 
 def save(df, video_id):
