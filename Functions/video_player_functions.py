@@ -3,7 +3,7 @@ from Functions.db_connection import videos_ref
 
 
 def youtube_link_to_id(link):
-    print(link)
+    print(f"youtube_link_to_id video link: {link}")
     video_id = re.findall("=(.*?)&", link)
     if len(video_id) == 0:
         video_id = re.findall("=(.*)", link)
@@ -19,4 +19,5 @@ def get_video_embed_by_id(video_id):
 
 def get_video_link_by_pointer(pointer):
     video_link = videos_ref.child(str(pointer)).get().val()
+    print(f"get_video_link_by_pointer video link {video_link}")
     return video_link
