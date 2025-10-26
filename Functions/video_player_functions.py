@@ -17,5 +17,5 @@ def get_video_embed_by_id(video_id):
 
 
 def get_video_link_by_pointer(pointer):
-    video_link = videos_ref.child(str(pointer)).get()
+    video_link = videos_ref.child(str(pointer)).get().val()
     return video_link
