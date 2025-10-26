@@ -1,15 +1,15 @@
-import json
+import firebase
 
-import firebase_admin
-from firebase_admin import db
-import os
+firebaseConfig = {
+                  "apiKey": "AIzaSyBVTnll2fdV3qkQ4EFG3hsRMO6P4phW7Kc",
+                  "authDomain": "video-link-db.firebaseapp.com",
+                  "databaseURL": "https://video-link-db-default-rtdb.europe-west1.firebasedatabase.app",
+                  "projectId": "video-link-db",
+                  "storageBucket": "video-link-db.firebasestorage.app",
+                  "messagingSenderId": "777912710342",
+                  "appId": "1:777912710342:web:9ac9387604fc35262953c7"
+}
 
-# KEY_PATH = 'Resources/key.json'
-key = os.getenv('FIREBASE_KEY')
-key_json = json.loads(key)
-
-cred_obj = firebase_admin.credentials.Certificate(key_json)
-default_app = firebase_admin.initialize_app(cred_obj, {
-    'databaseURL': "https://video-link-db-default-rtdb.europe-west1.firebasedatabase.app/"
-    })
-videos_ref = db.reference("/Videos")
+default_app = firebase.initialize_app(firebaseConfig)
+db = default_app.database()
+videos_ref = db.child("Videos")
