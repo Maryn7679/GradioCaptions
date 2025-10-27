@@ -1,43 +1,29 @@
 import pandas as pd
-import json
-
-FILE_PATH = "Resources/captions.jsonl"
+from Functions.db_connection import default_app
 
 
 def get_captions_by_video_id(video_id):
-    with open(FILE_PATH) as file:
-        captions = pd.read_json(file, lines=True)
-
-    captions_edit = captions[captions['file'] == video_id]
-    captions_edit = captions_edit[['start_time', 'text', 'end_time']]
+    response = default_app.database().child("Captions").child(video_id).get().val()
+    captions = pd.DataFrame(response)
+    captions_edit = captions[['start_time', 'text', 'end_time']]
     captions_edit.columns = ["Start", "Text", "End"]
-    return captions_edit
+    return captions_edit, captions
 
 
-def save_dataframe(df, video_id, user):
-    cols = ["clean_text", "start_time", "user_id", "signer", "file", "end_time", "url", "text"]
-    other_captions_data = []
-    new_captions_data = []
-
-    with open(FILE_PATH) as f:
-        for line in f:
-            caption = json.loads(line)
-            if caption['file'] == video_id:
-                new_captions_data.append(caption)
-            else:
-                other_captions_data.append(caption)
-
-    other_captions = pd.DataFrame(data=other_captions_data, columns=cols)
-    new_captions = pd.DataFrame(data=new_captions_data, columns=cols)
+def save_dataframe(df, df_full, video_id, user):
     try:
-        new_captions['start_time'] = df['Start'].apply(lambda x: float(x))
-        new_captions['text'] = df['Text']
-        new_captions['end_time'] = df['End'].apply(lambda x: float(x))
-        new_captions['user_id'] = user
+        df_full["user_id"].loc[
+            df_full["start_time"] != df["Start"] or
+            df_full["end_time"] != df["End"] or
+            df_full["text"] != df["Text"]
+                                ] = user
+        df_full["start_time"] = df["Start"].apply(lambda x: float(x))
+        df_full["text"] = df["Text"]
+        df_full["end_time"] = df["End"].apply(lambda x: float(x))
 
-        all_captions = pd.concat([other_captions, new_captions], ignore_index=True)
+        df_json = df.to_json(orient="index")
+        default_app.database().child("Captions").child(video_id).set(df_json)
 
-        all_captions.to_json(FILE_PATH, orient='records', lines=True)
         return "Save successful!"
     except ValueError:
         return "Save failed: Incorrect input format"

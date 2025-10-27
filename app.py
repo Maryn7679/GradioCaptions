@@ -13,8 +13,8 @@ def get_username(profile: gr.OAuthProfile):
     return profile
 
 
-def save(df, video_id):
-    return save_dataframe(df, video_id, user)
+def save(df, df_full, video_id):
+    return save_dataframe(df, df_full, video_id, user)
 
 
 def get_next_components():
@@ -28,12 +28,12 @@ def get_next_components():
     next_video_id = youtube_link_to_id(next_video_link)
 
     next_video = get_video_embed_by_id(next_video_id)
-    next_captions = get_captions_by_video_id(next_video_id)
+    next_captions, next_captions_full = get_captions_by_video_id(next_video_id)
 
-    return next_video, next_captions, next_video_id
+    return next_video, next_video_id, next_captions, next_captions_full
 
 
-(start_video, start_captions, start_video_id) = get_next_components()
+(start_video, start_video_id, start_captions, start_captions_full) = get_next_components()
 
 with gr.Blocks(css=css) as main_page:
     gr.Markdown("# Caption Editor")
@@ -42,6 +42,7 @@ with gr.Blocks(css=css) as main_page:
 
     current_user = gr.Textbox(visible=False, interactive=False)
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
+    current_captions_full = gr.DataFrame(value=start_captions_full, visible=False, interactive=False)
 
     main_page.load(get_username, outputs=current_user)
 
@@ -64,9 +65,9 @@ with gr.Blocks(css=css) as main_page:
                     next_video_button = gr.Button("Next")
 
             next_video_button.click(fn=get_next_components,
-                                    outputs=[video_embed, caption_editor, current_video_id])
+                                    outputs=[video_embed, caption_editor, current_video_id, current_captions_full])
             save_button.click(fn=save,
-                              inputs=[caption_editor, current_video_id],
+                              inputs=[caption_editor, current_captions_full, current_video_id],
                               outputs=save_result)
 
 main_page.launch(share=True, ssr_mode=False)
