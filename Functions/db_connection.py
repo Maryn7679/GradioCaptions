@@ -11,5 +11,3 @@ firebaseConfig = {
 }
 
 default_app = firebase.initialize_app(firebaseConfig)
-db = default_app.database()
-videos_ref = db.child("Videos")

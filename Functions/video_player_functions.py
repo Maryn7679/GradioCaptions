@@ -1,5 +1,6 @@
 import re
-from Functions.db_connection import videos_ref
+from Functions.db_connection import default_app
+
 
 def youtube_link_to_id(link):
     video_id = re.findall("=(.*?)&", link)
@@ -16,10 +17,5 @@ def get_video_embed_by_id(video_id):
 
 
 def get_video_link_by_pointer(pointer):
-    print(f"get_video_link_by_pointer: pointer = {pointer}")
-    video_link = videos_ref.child(pointer).get().val()
-    print(f"get_video_link_by_pointer: videos_ref = {videos_ref}")
-    print(f"get_video_link_by_pointer: videos_ref.child(str(pointer)) = {videos_ref.child(pointer)}")
-    print(f"get_video_link_by_pointer: videos_ref.child(str(pointer)).get().val() = {videos_ref.child(pointer).get().val()}")
-    print(f"get_video_link_by_pointer: video_link = {video_link}")
+    video_link = default_app.database().child("Videos").child(str(pointer)).get().val()
     return video_link
