@@ -4,9 +4,7 @@ from Functions.db_connection import default_app
 
 def get_captions_by_video_id(video_id):
     response = default_app.database().child("Captions").child(video_id).get().val()
-    print(response)
     captions = pd.DataFrame(response)
-    print(captions)
     captions_edit = captions[['start_time', 'text', 'end_time']]
     captions_edit.columns = ["Start", "Text", "End"]
     return captions_edit, captions

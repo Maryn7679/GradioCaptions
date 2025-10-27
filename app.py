@@ -65,7 +65,7 @@ with gr.Blocks(css=css) as main_page:
                     next_video_button = gr.Button("Next")
 
             next_video_button.click(fn=get_next_components,
-                                    outputs=[video_embed, caption_editor, current_video_id, current_captions_full])
+                                    outputs=[video_embed, current_video_id, caption_editor, current_captions_full])
             save_button.click(fn=save,
                               inputs=[caption_editor, current_captions_full, current_video_id],
                               outputs=save_result)
