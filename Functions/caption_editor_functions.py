@@ -31,11 +31,18 @@ def save_dataframe(df, df_full, video_id, user):
         print(df_full)
 
     try:
-        df_full["user_id"].loc[
-            df_full["start_time"] != df["Start"] or
-            df_full["end_time"] != df["End"] or
-            df_full["text"] != df["Text"]
-                                ] = user
+        print("try:")
+
+        df_full["user_id"] = user
+        # .loc[
+        #     df_full["start_time"] != df["Start"] or
+        #     df_full["end_time"] != df["End"] or
+        #     df_full["text"] != df["Text"]
+        #                         ] = user
+
+        print("df full:")
+        print(df_full)
+
         df_full["start_time"] = df["Start"].apply(lambda x: float(x))
         df_full["text"] = df["Text"]
         df_full["end_time"] = df["End"].apply(lambda x: float(x))
