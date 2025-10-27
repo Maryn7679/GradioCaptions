@@ -14,47 +14,19 @@ def get_captions_by_video_id(video_id):
 
 
 def save_dataframe(df, df_full, video_id, user):
-
-    print("df:")
-    print(df)
-    print("df full:")
-    print(df_full)
-
     if len(df.index) > len(df_full.index):
         new_rows = len(df_full.index) - len(df.index)
         empty_data = {col: [None for _ in range(new_rows)] for col in df_full.columns}
         empty_df = pd.DataFrame(empty_data)
 
         df_full = pd.concat([df_full, empty_df], ignore_index=True)
-
-        print("extra rows df full:")
-        print(df_full)
-
     try:
-        print("try:")
-
         df_full["user_id"] = user
-        # .loc[
-        #     df_full["start_time"] != df["Start"] or
-        #     df_full["end_time"] != df["End"] or
-        #     df_full["text"] != df["Text"]
-        #                         ] = user
-
-        print("df full:")
-        print(df_full)
-
         df_full["start_time"] = df["Start"].apply(lambda x: float(x))
         df_full["text"] = df["Text"]
         df_full["end_time"] = df["End"].apply(lambda x: float(x))
 
-        print("df full:")
-        print(df_full)
-
-        df_json = df_full.to_json(orient="index")
-
-        print("json")
-        print(df_json)
-
+        df_json = df_full.to_dict(orient="index")
         default_app.database().child("Captions").child(video_id).set(df_json)
 
         return "Save successful!"
