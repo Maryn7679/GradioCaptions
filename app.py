@@ -121,8 +121,6 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
     current_captions_full = gr.DataFrame(value=start_captions_full, visible=False, interactive=False)
     selected_row_idx = gr.Number(value=-1, visible=False)
 
-    main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
-
     # @gr.render(inputs=current_user)
     # def render_page(logged_in_user):
     #     if logged_in_user is None:
@@ -203,7 +201,8 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
     # Handle save entry
     save_entry_button.click(
         fn=save_entry,
-        inputs=[caption_editor, start_time_input, text_input, end_time_input, selected_row_idx, current_video_id, current_captions_full],
+        inputs=[caption_editor, start_time_input, text_input, end_time_input,
+                selected_row_idx, current_video_id, current_captions_full],
         outputs=[caption_editor, editing_panel, save_result]
     )
 
@@ -234,5 +233,7 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
             }, 100);
         }"""
     )
+
+    main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
 
 main_page.launch(share=True, ssr_mode=False)
