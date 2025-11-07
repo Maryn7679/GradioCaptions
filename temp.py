@@ -55,4 +55,4 @@ with gr.Blocks(css=css, head=yt_init_js) as demo:
         }"""
     )
 
-demo.launch(share=True, ssr_mode=False)
+demo.launch(share=True)
