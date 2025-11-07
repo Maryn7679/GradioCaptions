@@ -116,7 +116,10 @@ def get_next_components():
 
 with gr.Blocks(css=css, head=yt_init_js) as main_page:
     gr.Markdown("## Caption Editor")
-    gr.LoginButton()
+
+    if user == "anonymous_user":
+        gr.LoginButton()
+    gr.Textbox(value=f"Currently logged in as: {user}")
 
     current_user = gr.Textbox(visible=False, interactive=False)
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
@@ -157,7 +160,7 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
             add_entry_button = gr.Button("Add Entry", variant="secondary")
 
     with gr.Row():
-    # Editing panel (initially hidden) - spans full width
+        # Editing panel (initially hidden) - spans full width
         with gr.Group(visible=False) as editing_panel:
             gr.Markdown("### Edit Caption Entry")
             with gr.Row(equal_height=False):
