@@ -15,6 +15,10 @@ def get_username(profile: gr.OAuthProfile):
     return profile
 
 
+def save(df_copy, df_full, video_id):
+    return save_dataframe(df_copy, df_full, video_id, user)
+
+
 def on_row_select(df, evt: gr.SelectData):
     """Handle row selection in DataFrame"""
     if evt.index is not None and len(evt.index) > 0:
@@ -74,7 +78,7 @@ def save_entry(df, start_time, text, end_time, selected_row_idx, video_id, df_fu
                 df_copy = df_copy.sort_values('Start').reset_index(drop=True)
         
         # Update in database
-        save_result = save_dataframe(df_copy, df_full, video_id, user)
+        save_result = save(df_copy, df_full, video_id)
         
         return (
             df_copy,
