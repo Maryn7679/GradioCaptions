@@ -1,6 +1,6 @@
 import gradio as gr
 import pandas as pd
-from Functions.video_player_functions import youtube_link_to_id, get_video_embed_by_id, get_video_link_by_pointer, get_youtube_player_html
+from Functions.video_player_functions import youtube_link_to_id, get_video_link_by_pointer, get_youtube_player_html
 from Functions.caption_editor_functions import request_captions_by_video_id, save_captions_to_db
 from Resources.css import css
 from Resources.js import yt_init_js
@@ -46,6 +46,8 @@ def show_add_entry_form():
 
 def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     """Save or update a caption entry"""
+    if user == "anonymous_user":
+        return df, gr.update(visible=True), gr.Warning("Please log in to save changes")
     try:
         start_time = float(start_time)
         end_time = float(end_time)
@@ -138,11 +140,6 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
         }"""
     )
 
-    # @gr.render(inputs=current_user)
-    # def render_page(logged_in_user):
-    #     if logged_in_user is None:
-    #         gr.Markdown("## Please log in via Hugging Face")
-    #     else:
     with gr.Row():
         with gr.Column(scale=2, min_width=600):
             # Video player and "next video button

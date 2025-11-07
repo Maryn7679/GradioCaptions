@@ -10,7 +10,7 @@ def save_captions_to_db(df, video_id, user):
         default_app.database().child("video_captions").child(video_id).child("username").set(user)
         return "Save successful!"
     except Exception as e:
-        return f"Save failed: {e}"
+        return f"Save failed: {str(e)}"
 
 
 def request_captions_by_video_id(video_id):
