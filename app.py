@@ -219,21 +219,21 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
                 outputs=[editing_panel]
             )
 
-    # Load initial video on page load
-    main_page.load(
-        fn=None,
-        inputs=current_video_id,
-        outputs=None,
-        js="""(videoId) => {
-            const checkPlayer = setInterval(() => {
-                if (window.ytPlayer && window.ytPlayer.cueVideoById) {
-                    clearInterval(checkPlayer);
-                    window.ytPlayer.cueVideoById(videoId);
-                }
-            }, 100);
-        }"""
-    )
+            # Load initial video on page load
+            main_page.load(
+                fn=None,
+                inputs=current_video_id,
+                outputs=None,
+                js="""(videoId) => {
+                    const checkPlayer = setInterval(() => {
+                        if (window.ytPlayer && window.ytPlayer.cueVideoById) {
+                            clearInterval(checkPlayer);
+                            window.ytPlayer.cueVideoById(videoId);
+                        }
+                    }, 100);
+                }"""
+            )
 
-    main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
+            main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
 
 main_page.launch(share=True)
