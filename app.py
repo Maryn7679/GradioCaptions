@@ -118,8 +118,9 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
 
     current_user = gr.Textbox(visible=False, interactive=False)
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
-    # current_captions_full = gr.DataFrame(value=start_captions_full, visible=False, interactive=False)
     selected_row_idx = gr.Number(value=-1, visible=False)
+
+    main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
 
     @gr.render(inputs=current_user)
     def render_page(logged_in_user):
@@ -233,7 +234,5 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
                     }, 100);
                 }"""
             )
-
-            main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
 
 main_page.launch(share=True)
