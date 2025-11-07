@@ -11,7 +11,10 @@ user = "anonymous_user"
 
 def get_username(profile: gr.OAuthProfile):
     global user
-    user = profile.username
+    if profile is None:
+        user = "anonymous_user"
+    else:
+        user = profile.username
     return profile
 
 
@@ -46,6 +49,7 @@ def show_add_entry_form():
 
 def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     """Save or update a caption entry"""
+    main_page.load(get_username)
     if user == "anonymous_user":
         return df, gr.update(visible=True), gr.Warning("Please sign in to save changes")
     try:
@@ -119,11 +123,11 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
 
     gr.LoginButton()
 
-    current_user = gr.Textbox(visible=False, interactive=False)
+    # current_user = gr.Textbox(visible=False, interactive=False)
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
     selected_row_idx = gr.Number(value=-1, visible=False)
 
-    main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
+    main_page.load(get_username)  # Disabled when auth is disabled
 
     # Load initial video on page load
     main_page.load(
