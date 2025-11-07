@@ -47,7 +47,7 @@ def show_add_entry_form():
 def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     """Save or update a caption entry"""
     if user == "anonymous_user":
-        return df, gr.update(visible=True), gr.Warning("Please log in to save changes")
+        return df, gr.update(visible=True), gr.Warning("Please sign in to save changes")
     try:
         start_time = float(start_time)
         end_time = float(end_time)
@@ -77,8 +77,7 @@ def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
         
         # Update in database
         save_result = save_captions_to_db(df_copy, video_id, user)
-        df_copy.columns = ["Start", "Text", "End"]
-        
+
         return (
             df_copy,
             gr.update(visible=False),  # Hide panel on success

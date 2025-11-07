@@ -4,8 +4,9 @@ from Functions.db_connection import default_app
 
 def save_captions_to_db(df, video_id, user):
     try:
-        df.columns = ['start_time', 'text', 'end_time']
-        df_json = df.to_dict(orient="index")
+        data = df.copy()
+        data.columns = ['start_time', 'text', 'end_time']
+        df_json = data.to_dict(orient="index")
         default_app.database().child("video_captions").child(video_id).child("captions").set(df_json)
         default_app.database().child("video_captions").child(video_id).child("username").set(user)
         return "Save successful!"
