@@ -117,21 +117,13 @@ def get_next_components():
 with gr.Blocks(css=css, head=yt_init_js) as main_page:
     gr.Markdown("## Caption Editor")
 
+    gr.LoginButton()
+
     current_user = gr.Textbox(visible=False, interactive=False)
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
     selected_row_idx = gr.Number(value=-1, visible=False)
 
     main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
-
-    @gr.render(inputs=current_user)
-    def render_page(logged_in_user):
-        global user
-        if logged_in_user is None:
-            user = "anonymous_user"
-            gr.Markdown("## Please log in via Hugging Face")
-            gr.LoginButton()
-        else:
-            gr.Markdown(f"Logged in as: {user}")
 
     # Load initial video on page load
     main_page.load(
