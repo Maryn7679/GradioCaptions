@@ -236,4 +236,4 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
 
     main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
 
-main_page.launch(share=True, ssr_mode=False)
+main_page.launch(share=True)

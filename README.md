@@ -5,7 +5,7 @@ colorFrom: blue
 colorTo: red
 sdk: gradio
 sdk_version: 5.49.1
-app_file: temp.py
+app_file: app.py
 pinned: false
 hf_oauth: true
 ---
