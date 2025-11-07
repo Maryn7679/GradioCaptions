@@ -75,6 +75,7 @@ def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
         
         # Update in database
         save_result = save_captions_to_db(df_copy, video_id, user)
+        df_copy.columns = ["Start", "Text", "End"]
         
         return (
             df_copy,
