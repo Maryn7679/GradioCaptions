@@ -15,10 +15,6 @@ def get_username(profile: gr.OAuthProfile):
     return profile
 
 
-# def save(df_copy, df_full, video_id):
-#     return save_dataframe(df_copy, df_full, video_id, user)
-
-
 def on_row_select(df, evt: gr.SelectData):
     """Handle row selection in DataFrame"""
     if evt.index is not None and len(evt.index) > 0:
@@ -125,103 +121,103 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
     # current_captions_full = gr.DataFrame(value=start_captions_full, visible=False, interactive=False)
     selected_row_idx = gr.Number(value=-1, visible=False)
 
-    # @gr.render(inputs=current_user)
-    # def render_page(logged_in_user):
-    #     if logged_in_user is None:
-    #         gr.Markdown("## Please log in via Hugging Face")
-    #     else:
-    with gr.Row():
-        with gr.Column(scale=2, min_width=600):
-            # Video player and "next video button
-            video_embed = gr.HTML(value=get_youtube_player_html())
-            next_video_button = gr.Button("Next")
-        with gr.Column(scale=1, min_width=200):
-            # Read-only DataFrame with add button
-            caption_editor = gr.DataFrame(interactive=False,
-                                          elem_id="tbl",
-                                          value=start_captions,
-                                          datatype=["number", "str", "number"],
-                                          col_count=(3, "fixed"),
-                                          column_widths=["20%", "60%", "20%"],
-                                          headers=["Start", "Text", "End"],
-                                          wrap=True)
-            add_entry_button = gr.Button("Add Entry", variant="secondary")
+    @gr.render(inputs=current_user)
+    def render_page(logged_in_user):
+        if logged_in_user is None:
+            gr.Markdown("## Please log in via Hugging Face")
+        else:
+            with gr.Row():
+                with gr.Column(scale=2, min_width=600):
+                    # Video player and "next video button
+                    video_embed = gr.HTML(value=get_youtube_player_html())
+                    next_video_button = gr.Button("Next")
+                with gr.Column(scale=1, min_width=200):
+                    # Read-only DataFrame with add button
+                    caption_editor = gr.DataFrame(interactive=False,
+                                                  elem_id="tbl",
+                                                  value=start_captions,
+                                                  datatype=["number", "str", "number"],
+                                                  col_count=(3, "fixed"),
+                                                  column_widths=["20%", "60%", "20%"],
+                                                  headers=["Start", "Text", "End"],
+                                                  wrap=True)
+                    add_entry_button = gr.Button("Add Entry", variant="secondary")
 
-    with gr.Row():
-    # Editing panel (initially hidden) - spans full width
-        with gr.Group(visible=False) as editing_panel:
-            gr.Markdown("### Edit Caption Entry")
-            with gr.Row(equal_height=False):
-                with gr.Column():
-                    start_time_input = gr.Textbox(label="Start Time (seconds)", value="0.000", interactive=False)
-                    insert_start_time_button = gr.Button("Insert Current Time")
-                with gr.Column():
-                    text_input = gr.Textbox(label="Caption Text", placeholder="Enter caption text...")
+            with gr.Row():
+            # Editing panel (initially hidden) - spans full width
+                with gr.Group(visible=False) as editing_panel:
+                    gr.Markdown("### Edit Caption Entry")
+                    with gr.Row(equal_height=False):
+                        with gr.Column():
+                            start_time_input = gr.Textbox(label="Start Time (seconds)", value="0.000", interactive=False)
+                            insert_start_time_button = gr.Button("Insert Current Time")
+                        with gr.Column():
+                            text_input = gr.Textbox(label="Caption Text", placeholder="Enter caption text...")
 
-                with gr.Column():
-                    end_time_input = gr.Textbox(label="End Time (seconds)", value="0.000", interactive=False)
-                    insert_end_time_button = gr.Button("Insert Current Time")
+                        with gr.Column():
+                            end_time_input = gr.Textbox(label="End Time (seconds)", value="0.000", interactive=False)
+                            insert_end_time_button = gr.Button("Insert Current Time")
 
-            with gr.Row(equal_height=False):
-                save_entry_button = gr.Button("Save Entry", variant="primary")
-                cancel_button = gr.Button("Cancel", variant="secondary")
+                    with gr.Row(equal_height=False):
+                        save_entry_button = gr.Button("Save Entry", variant="primary")
+                        cancel_button = gr.Button("Cancel", variant="secondary")
 
-    save_result = gr.Markdown()
+            save_result = gr.Markdown()
 
-    # Event handlers
-    next_video_button.click(
-        fn=get_next_components,
-        outputs=[caption_editor, current_video_id]
-    )
+            # Event handlers
+            next_video_button.click(
+                fn=get_next_components,
+                outputs=[caption_editor, current_video_id]
+            )
 
-    # Load video when current_video_id changes
-    current_video_id.change(
-        fn=None,
-        inputs=current_video_id,
-        outputs=None,
-        js="""(videoId) => {
-            if (window.ytPlayer && window.ytPlayer.cueVideoById) {
-                console.log('[Video Load] Calling cueVideoById with:', videoId);
-                window.ytPlayer.cueVideoById(videoId);
-            } else {
-                console.error('[Video Load] Player not ready yet');
-            }
-        }"""
-    )
+            # Load video when current_video_id changes
+            current_video_id.change(
+                fn=None,
+                inputs=current_video_id,
+                outputs=None,
+                js="""(videoId) => {
+                    if (window.ytPlayer && window.ytPlayer.cueVideoById) {
+                        console.log('[Video Load] Calling cueVideoById with:', videoId);
+                        window.ytPlayer.cueVideoById(videoId);
+                    } else {
+                        console.error('[Video Load] Player not ready yet');
+                    }
+                }"""
+            )
 
-    # Handle row selection in DataFrame
-    caption_editor.select(
-        fn=on_row_select,
-        inputs=[caption_editor],
-        outputs=[editing_panel, start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
-    )
+            # Handle row selection in DataFrame
+            caption_editor.select(
+                fn=on_row_select,
+                inputs=[caption_editor],
+                outputs=[editing_panel, start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
+            )
 
-    # Handle add entry button
-    add_entry_button.click(
-        fn=show_add_entry_form,
-        outputs=[editing_panel, start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
-    )
+            # Handle add entry button
+            add_entry_button.click(
+                fn=show_add_entry_form,
+                outputs=[editing_panel, start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
+            )
 
-    # Handle save entry
-    save_entry_button.click(
-        fn=save_entry,
-        inputs=[caption_editor, start_time_input, text_input, end_time_input,
-                selected_row_idx, current_video_id],
-        outputs=[caption_editor, editing_panel, save_result]
-    )
+            # Handle save entry
+            save_entry_button.click(
+                fn=save_entry,
+                inputs=[caption_editor, start_time_input, text_input, end_time_input,
+                        selected_row_idx, current_video_id],
+                outputs=[caption_editor, editing_panel, save_result]
+            )
 
-    insert_start_time_button.click(fn=None, inputs=None, outputs=start_time_input,
-      js="() => window.ytPlayer ? +window.ytPlayer.getCurrentTime().toFixed(3) : 0")
+            insert_start_time_button.click(fn=None, inputs=None, outputs=start_time_input,
+              js="() => window.ytPlayer ? +window.ytPlayer.getCurrentTime().toFixed(3) : 0")
 
-    insert_end_time_button.click(fn=None, inputs=None, outputs=end_time_input,
-      js="() => window.ytPlayer ? +window.ytPlayer.getCurrentTime().toFixed(3) : 0")
+            insert_end_time_button.click(fn=None, inputs=None, outputs=end_time_input,
+              js="() => window.ytPlayer ? +window.ytPlayer.getCurrentTime().toFixed(3) : 0")
 
 
-    # Handle cancel
-    cancel_button.click(
-        fn=cancel_edit,
-        outputs=[editing_panel]
-    )
+            # Handle cancel
+            cancel_button.click(
+                fn=cancel_edit,
+                outputs=[editing_panel]
+            )
 
     # Load initial video on page load
     main_page.load(
