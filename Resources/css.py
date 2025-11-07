@@ -1,3 +1,4 @@
+<<<<<<< HEAD:Resources/css.py
 css = """
 .container {
     position: relative;
@@ -12,3 +13,9 @@ css = """
     width: 100%;
     height: 100%;
 }"""
+=======
+css = """
+#yt-container {
+}
+"""
+>>>>>>> main:Pages/Resources/css.py
