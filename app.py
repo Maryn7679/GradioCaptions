@@ -49,7 +49,6 @@ def show_add_entry_form():
 
 def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     """Save or update a caption entry"""
-    main_page.load(get_username)
     if user == "anonymous_user":
         return df, gr.update(visible=True), gr.Warning("Please sign in to save changes")
     try:
