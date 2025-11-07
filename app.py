@@ -1,7 +1,7 @@
 import gradio as gr
 import pandas as pd
 from Functions.video_player_functions import youtube_link_to_id, get_video_embed_by_id, get_video_link_by_pointer, get_youtube_player_html
-from Functions.caption_editor_functions import get_captions_by_video_id, save_dataframe
+from Functions.caption_editor_functions import request_captions_by_video_id, save_captions_to_db
 from Resources.css import css
 from Resources.js import yt_init_js
 
@@ -15,8 +15,8 @@ def get_username(profile: gr.OAuthProfile):
     return profile
 
 
-def save(df_copy, df_full, video_id):
-    return save_dataframe(df_copy, df_full, video_id, user)
+# def save(df_copy, df_full, video_id):
+#     return save_dataframe(df_copy, df_full, video_id, user)
 
 
 def on_row_select(df, evt: gr.SelectData):
@@ -48,7 +48,7 @@ def show_add_entry_form():
     )
 
 
-def save_entry(df, start_time, text, end_time, selected_row_idx, video_id, df_full):
+def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     """Save or update a caption entry"""
     try:
         start_time = float(start_time)
@@ -78,7 +78,7 @@ def save_entry(df, start_time, text, end_time, selected_row_idx, video_id, df_fu
                 df_copy = df_copy.sort_values('Start').reset_index(drop=True)
         
         # Update in database
-        save_result = save(df_copy, df_full, video_id)
+        save_result = save_captions_to_db(df_copy, video_id, user)
         
         return (
             df_copy,
@@ -107,14 +107,14 @@ def get_next_components():
 
     try:
         next_video_id = youtube_link_to_id(next_video_link)
-        next_captions, next_captions_full = get_captions_by_video_id(next_video_id)
-        return next_captions, next_captions_full, next_video_id
+        next_captions = request_captions_by_video_id(next_video_id)
+        return next_captions, next_video_id
     except (ValueError, Exception) as e:
         empty_captions = pd.DataFrame(columns=["Start", "Text", "End"])
         return empty_captions, "error"
     
 
-(start_captions, start_captions_full, start_video_id) = get_next_components()
+(start_captions, start_video_id) = get_next_components()
 
 with gr.Blocks(css=css, head=yt_init_js) as main_page:
     gr.Markdown("## Caption Editor")
@@ -122,7 +122,7 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
 
     current_user = gr.Textbox(visible=False, interactive=False)
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
-    current_captions_full = gr.DataFrame(value=start_captions_full, visible=False, interactive=False)
+    # current_captions_full = gr.DataFrame(value=start_captions_full, visible=False, interactive=False)
     selected_row_idx = gr.Number(value=-1, visible=False)
 
     # @gr.render(inputs=current_user)
@@ -171,7 +171,7 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
     # Event handlers
     next_video_button.click(
         fn=get_next_components,
-        outputs=[caption_editor, current_captions_full, current_video_id]
+        outputs=[caption_editor, current_video_id]
     )
 
     # Load video when current_video_id changes
@@ -206,7 +206,7 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
     save_entry_button.click(
         fn=save_entry,
         inputs=[caption_editor, start_time_input, text_input, end_time_input,
-                selected_row_idx, current_video_id, current_captions_full],
+                selected_row_idx, current_video_id],
         outputs=[caption_editor, editing_panel, save_result]
     )
 
