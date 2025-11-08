@@ -133,7 +133,7 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
         if logged_in_user is None:
             gr.Markdown("## Please log in via Hugging Face")
         else:
-            with gr.Row():
+            with gr.Row(css=css, head=yt_init_js):
                 with gr.Column(scale=2, min_width=600):
                     # Video player and "next video button
                     video_embed = gr.HTML(value=get_youtube_player_html())
