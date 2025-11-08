@@ -117,7 +117,7 @@ def get_next_components():
 
 (start_captions, start_video_id) = get_next_components()
 
-with gr.Blocks() as main_page:
+with gr.Blocks(css=css, head=yt_init_js) as main_page:
     gr.Markdown("## Caption Editor")
 
     gr.LoginButton()
