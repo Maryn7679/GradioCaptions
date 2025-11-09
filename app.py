@@ -124,18 +124,18 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
     selected_row_idx = gr.Number(value=-1, visible=False)
 
+    main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
+
     with gr.Row():
         with gr.Column(scale=1, min_width=100):
-            gr.LoginButton(value="", logout_value="")
+            gr.LoginButton(value="Log in", logout_value="Log in")
         with gr.Column(scale=4, min_width=400):
             @gr.render(inputs=current_user)
             def check_login(logged_in_user):
-                # if logged_in_user is None:
-                #     gr.Markdown("## Please log in via Hugging Face")
-                # else:
-                gr.Markdown(f"## user: {user}, current_user: {logged_in_user}")
-
-    main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
+                if logged_in_user is None:
+                    gr.Markdown("## Please log in via Hugging Face")
+                else:
+                    gr.Markdown(f"## Logged in as {user}")
 
     with gr.Row():
         with gr.Column(scale=2, min_width=600):
