@@ -117,8 +117,7 @@ def get_next_components():
 
 (start_captions, start_video_id) = get_next_components()
 
-with gr.Blocks(css=css, head=yt_init_js) as main_page:
-    gr.Markdown("## Caption Editor")
+with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
 
     current_user = gr.Textbox(visible=False, interactive=False)
     current_video_id = gr.Textbox(value=start_video_id, visible=False, interactive=False)
@@ -126,16 +125,18 @@ with gr.Blocks(css=css, head=yt_init_js) as main_page:
 
     main_page.load(get_username, outputs=current_user)  # Disabled when auth is disabled
 
-    with gr.Row():
-        with gr.Column(scale=1, min_width=100):
-            gr.LoginButton(value="Log in", logout_value="Log in")
-        with gr.Column(scale=4, min_width=400):
+    with gr.Row(variant="panel"):
+        with gr.Column(scale=4):
+            gr.Markdown("## Caption Editor")
+        with gr.Column(scale=4):
             @gr.render(inputs=current_user)
             def check_login(logged_in_user):
                 if logged_in_user is None:
-                    gr.Markdown("## Please log in via Hugging Face")
+                    gr.Markdown("Please log in via Hugging Face", rtl=True)
                 else:
-                    gr.Markdown(f"## Logged in as {user}")
+                    gr.Markdown(f"Logged in as {user}", rtl=True)
+        with gr.Column(scale=1, min_width=50):
+            gr.LoginButton(value="Log in", logout_value="Log in")
 
     with gr.Row():
         with gr.Column(scale=2, min_width=600):
