@@ -135,7 +135,7 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
                 if logged_in_user == "anonymous_user":
                     gr.Markdown("Please log in via Hugging Face", rtl=True)
                 else:
-                    gr.Markdown(f"Logged in as {logged_in_user}", rtl=True)
+                    gr.Markdown(f"Logged in as {logged_in_user.username}", rtl=True)
         with gr.Column(scale=1, min_width=50):
             gr.LoginButton(value="Log in", logout_value="Log in")
 
