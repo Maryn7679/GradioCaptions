@@ -4,6 +4,7 @@ from Functions.video_player_functions import youtube_link_to_id, get_video_link_
 from Functions.caption_editor_functions import request_captions_by_video_id, save_captions_to_db
 from Resources.css import css
 from Resources.js import yt_init_js
+from Resources.localization import get_string
 
 next_video_pointer = 0
 user = "anonymous_user"
@@ -30,9 +31,9 @@ def on_row_select(df, evt: gr.SelectData):
                 gr.update(value=str(row['Text'])),  # text_input
                 gr.update(value=float(row['End'])),  # end_time
                 gr.update(value=row_idx),  # selected_row_idx
-                gr.update(value="Update Entry")  # save_entry_button
+                gr.update(value=get_string("update_entry_button"))  # save_entry_button
             )
-    return gr.update(visible=False), "", "", "", -1, "Save Entry"
+    return gr.update(visible=False), "", "", "", -1, get_string("save_entry_button")
 
 
 def show_add_entry_form():
@@ -43,23 +44,23 @@ def show_add_entry_form():
         gr.update(value=""),  # text_input
         gr.update(value=0.0),  # end_time
         gr.update(value=-1),  # selected_row_idx (-1 means new entry)
-        gr.update(value="Add Entry")  # save_entry_button
+        gr.update(value=get_string("add_entry_button_form"))  # save_entry_button
     )
 
 
 def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     """Save or update a caption entry"""
     if user == "anonymous_user":
-        return df, gr.update(visible=True), gr.Warning("Please sign in to save changes")
+        return df, gr.update(visible=True), gr.Warning(get_string("please_sign_in"))
     try:
         start_time = float(start_time)
         end_time = float(end_time)
 
         if start_time >= end_time:
-            return df, gr.update(visible=True), gr.Warning("Start time must be less than end time")
+            return df, gr.update(visible=True), gr.Warning(get_string("start_less_than_end"))
 
         if not text.strip():
-            return df, gr.update(visible=True), gr.Warning("Text cannot be empty")
+            return df, gr.update(visible=True), gr.Warning(get_string("text_cannot_be_empty"))
 
         df_copy = df.copy()
 
@@ -88,9 +89,9 @@ def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
         )
 
     except ValueError as e:
-        return df, gr.update(visible=True), gr.Warning(f"Invalid time format: {str(e)}")
+        return df, gr.update(visible=True), gr.Warning(f"{get_string('invalid_time_format')} {str(e)}")
     except Exception as e:
-        return df, gr.update(visible=True), gr.Error(f"Error: {str(e)}")
+        return df, gr.update(visible=True), gr.Error(f"{get_string('error')} {str(e)}")
 
 
 def cancel_edit():
@@ -128,21 +129,21 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
 
     with gr.Row(variant="panel"):
         with gr.Column(scale=4):
-            gr.Markdown("## Caption Editor")
+            gr.Markdown(f"## {get_string('app_title')}")
         with gr.Column(scale=4):
             @gr.render(inputs=user_state)
             def check_login(logged_in_user):
                 if logged_in_user == "anonymous_user":
-                    gr.Markdown("Please log in via Hugging Face", rtl=True)
+                    gr.Markdown(get_string("please_log_in"), rtl=True)
                 else:
-                    gr.Markdown(f"Logged in as {logged_in_user.username}", rtl=True)
+                    gr.Markdown(f"{get_string('logged_in_as')} {logged_in_user.username}", rtl=True)
         with gr.Column(scale=1, min_width=50):
-            gr.LoginButton(value="Log in", logout_value="Log in")
+            gr.LoginButton(value=get_string("log_in_button"), logout_value=get_string("log_in_button"))
 
     with gr.Row():
         with gr.Column(scale=2, min_width=600):
             video_embed = gr.HTML(value=get_youtube_player_html())
-            next_video_button = gr.Button("Next", key="next_video")
+            next_video_button = gr.Button(get_string("next_button"), key="next_video")
         with gr.Column(scale=1, min_width=200):
             caption_editor = gr.DataFrame(
                 interactive=False,
@@ -150,27 +151,27 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
                 datatype=["number", "str", "number"],
                 col_count=(3, "fixed"),
                 column_widths=["20%", "60%", "20%"],
-                headers=["Start", "Text", "End"],
+                headers=[get_string("header_start"), get_string("header_text"), get_string("header_end")],
                 wrap=True
             )
-            add_entry_button = gr.Button("Add Entry", variant="secondary")
+            add_entry_button = gr.Button(get_string("add_entry_button"), variant="secondary")
 
     with gr.Row():
         with gr.Group(visible=False) as editing_panel:
-            gr.Markdown("### Edit Caption Entry")
+            gr.Markdown(f"### {get_string('edit_caption_title')}")
             with gr.Row(equal_height=False):
                 with gr.Column():
-                    start_time_input = gr.Textbox(label="Start Time (seconds)", value="0.000", interactive=False)
-                    insert_start_time_button = gr.Button("Insert Current Time")
+                    start_time_input = gr.Textbox(label=get_string("start_time_label"), value="0.000", interactive=False)
+                    insert_start_time_button = gr.Button(get_string("insert_current_time"))
                 with gr.Column():
-                    text_input = gr.Textbox(label="Caption Text", placeholder="Enter caption text...")
+                    text_input = gr.Textbox(label=get_string("caption_text_label"), placeholder=get_string("caption_text_placeholder"))
                 with gr.Column():
-                    end_time_input = gr.Textbox(label="End Time (seconds)", value="0.000", interactive=False)
-                    insert_end_time_button = gr.Button("Insert Current Time")
+                    end_time_input = gr.Textbox(label=get_string("end_time_label"), value="0.000", interactive=False)
+                    insert_end_time_button = gr.Button(get_string("insert_current_time"))
 
             with gr.Row(equal_height=False):
-                save_entry_button = gr.Button("Save Entry", variant="primary")
-                cancel_button = gr.Button("Cancel", variant="secondary")
+                save_entry_button = gr.Button(get_string("save_entry_button"), variant="primary")
+                cancel_button = gr.Button(get_string("cancel_button"), variant="secondary")
 
     save_result = gr.Markdown()
 
