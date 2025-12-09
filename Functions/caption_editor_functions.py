@@ -1,5 +1,6 @@
 import pandas as pd
 from Functions.db_connection import default_app
+from Resources.localization import get_string
 
 
 def save_captions_to_db(df, video_id, user):
@@ -9,9 +10,9 @@ def save_captions_to_db(df, video_id, user):
         df_json = data.to_dict(orient="index")
         default_app.database().child("video_captions").child(video_id).child("captions").set(df_json)
         default_app.database().child("video_captions").child(video_id).child("username").set(user)
-        return "Save successful!"
+        return get_string("save_successful")
     except Exception as e:
-        return f"Save failed: {str(e)}"
+        return f"{get_string('save_failed')} {str(e)}"
 
 
 def request_captions_by_video_id(video_id):
