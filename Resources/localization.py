@@ -41,7 +41,7 @@ STRINGS = {
         "save_failed": "Save failed:",
         "invalid_time_format": "Invalid time format:",
         "error": "Error:",
-        "all_videos_transcribed": "All videos transcribed!",
+        "all_videos_transcribed": "Save cancelled: All videos transcribed",
     },
     "uk": {
         # Header and login
@@ -80,9 +80,10 @@ STRINGS = {
         "save_failed": "Помилка збереження:",
         "invalid_time_format": "Невірний формат часу:",
         "error": "Помилка:",
-        "all_videos_transcribed": "Усі відео розмічено!",
+        "all_videos_transcribed": "Відміна збереження: Усі відео розмічено",
     }
 }
+
 
 def get_string(key):
     """Get localized string by key"""

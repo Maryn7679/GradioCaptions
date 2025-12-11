@@ -13,22 +13,28 @@ hf_oauth: true
 # Database structure
 2 main endpoints: Videos and video_captions.
 
-### Videos
-Contains a json object with YouTube links to the videos.
+### videos
+Contains a json object with YouTube links to the videos and 
+a boolean for whether the captions for that video are complete.
 
 Example entry: 
 ```
-0: "https://www.youtube.com/watch?v=tkMg8g8vVUo"
+0: 
+    url: "https://www.youtube.com/watch?v=tkMg8g8vVUo"
+    complete: true
 ```
 
 Keys are `integers`. 
 They define the order in which the videos show up on the page. 
-Keys must start with zero and have no gaps.
+Videos for which the captions are complete will be skipped.
 
-Values are video link `strings`.
+Values are json objects with `url` and `complete` keys. All keys are mandatory.
+`url`s are video link `strings`.
 Format is flexible, can optionally include `https://` or a query string.
 
-All data is read only.
+`complete`s are booleans.
+
+`url` is read-only, `complete` is writable.
 Editing/uploading new entries requires changing access rules. 
 
 ### video_captions

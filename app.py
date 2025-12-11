@@ -9,7 +9,7 @@ from Resources.localization import get_string
 next_video_pointer = 0
 user = "anonymous_user"
 n_videos = 21
-placeholder_link = "https://www.youtube.com/watch?v=1pXUgdCnVec"
+placeholder_link = "https://www.youtube.com/watch?v=wTQjwG2-ePA"
 
 
 def get_username(profile: gr.OAuthProfile):
@@ -55,7 +55,7 @@ def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     if user == "anonymous_user":
         return df, gr.update(visible=True), gr.Warning(get_string("please_sign_in"))
     if next_video_pointer == -1:
-        return df, gr.update(visible=True), gr.Success(get_string("all_videos_transcribed"))
+        return df, gr.update(visible=True), gr.Warning(get_string("all_videos_transcribed"))
     try:
         start_time = float(start_time)
         end_time = float(end_time)
