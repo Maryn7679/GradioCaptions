@@ -27,10 +27,12 @@ def get_video_embed_by_id(video_id):
 
 def get_video_link_by_pointer(pointer):
     video = default_app.database().child("videos").child(str(pointer)).get().val()
-    while video["complete"]:
-        pointer += 1
-        video = default_app.database().child("videos").child(str(pointer)).get().val()
-    return video["url"], pointer
+    if video["complete"]:
+        return None
+    # while video["complete"]:
+    #     pointer += 1
+    #     video = default_app.database().child("videos").child(str(pointer)).get().val()
+    return video["url"]
 
 
 def change_video_completion_status(is_complete, video_pointer):

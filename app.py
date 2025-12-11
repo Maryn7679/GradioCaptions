@@ -8,6 +8,8 @@ from Resources.localization import get_string
 
 next_video_pointer = 0
 user = "anonymous_user"
+n_videos = 20
+placeholder_link = "https://www.youtube.com/watch?v=1pXUgdCnVec"
 
 
 def get_username(profile: gr.OAuthProfile):
@@ -106,11 +108,17 @@ def change_completion_status(completion_status):
 
 def get_next_components():
     global next_video_pointer
-    next_video_link, link_pointer = get_video_link_by_pointer(next_video_pointer)
-    next_video_pointer = link_pointer + 1
+    next_video_link = get_video_link_by_pointer(next_video_pointer)
+    next_video_pointer = (next_video_pointer + 1) % n_videos
+
+    for i in range(n_videos):
+        if next_video_link is not None:
+            break
+        next_video_link = get_video_link_by_pointer(next_video_pointer)
+        next_video_pointer = (next_video_pointer + 1) % n_videos
     if next_video_link is None:
-        next_video_link, link_pointer = get_video_link_by_pointer(0)
-        next_video_pointer = link_pointer + 1
+        next_video_link = placeholder_link
+        next_video_pointer = -1
 
     try:
         next_video_id = youtube_link_to_id(next_video_link)
@@ -161,7 +169,6 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
             )
             add_entry_button = gr.Button(get_string("add_entry_button"), variant="secondary")
             editing_complete_checkbox = gr.Checkbox(label=get_string("editing_complete_checkbox"))
-            gr.Markdown(value=f"{next_video_pointer}")
 
     with gr.Row():
         with gr.Group(visible=False) as editing_panel:
