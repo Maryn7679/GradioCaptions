@@ -161,6 +161,7 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
             )
             add_entry_button = gr.Button(get_string("add_entry_button"), variant="secondary")
             editing_complete_checkbox = gr.Checkbox(label=get_string("editing_complete_checkbox"))
+            gr.Markdown(value=f"{next_video_pointer}")
 
     with gr.Row():
         with gr.Group(visible=False) as editing_panel:
