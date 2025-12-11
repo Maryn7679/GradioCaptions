@@ -8,7 +8,7 @@ from Resources.localization import get_string
 
 next_video_pointer = 0
 user = "anonymous_user"
-n_videos = 20
+n_videos = 21
 placeholder_link = "https://www.youtube.com/watch?v=1pXUgdCnVec"
 
 

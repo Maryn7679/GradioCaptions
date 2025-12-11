@@ -29,9 +29,6 @@ def get_video_link_by_pointer(pointer):
     video = default_app.database().child("videos").child(str(pointer)).get().val()
     if video["complete"]:
         return None
-    # while video["complete"]:
-    #     pointer += 1
-    #     video = default_app.database().child("videos").child(str(pointer)).get().val()
     return video["url"]
 
 
