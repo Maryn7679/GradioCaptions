@@ -54,6 +54,8 @@ def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     """Save or update a caption entry"""
     if user == "anonymous_user":
         return df, gr.update(visible=True), gr.Warning(get_string("please_sign_in"))
+    if next_video_pointer == -1:
+        return df, gr.update(visible=True), gr.Success(get_string("all_videos_transcribed"))
     try:
         start_time = float(start_time)
         end_time = float(end_time)
@@ -103,7 +105,7 @@ def cancel_edit():
 
 def change_completion_status(completion_status):
     global next_video_pointer
-    change_video_completion_status(completion_status, next_video_pointer - 1)
+    change_video_completion_status(completion_status, (next_video_pointer + n_videos - 1) % n_videos)
 
 
 def get_next_components():
@@ -112,7 +114,7 @@ def get_next_components():
         next_video_link = get_video_link_by_pointer(next_video_pointer)
         next_video_pointer = (next_video_pointer + 1) % n_videos
 
-        for i in range(n_videos):
+        for i in range(n_videos + 1):
             if next_video_link is not None:
                 break
             next_video_link = get_video_link_by_pointer(next_video_pointer)
