@@ -1,6 +1,6 @@
 import gradio as gr
 import pandas as pd
-from Functions.video_player_functions import youtube_link_to_id, get_video_link_by_pointer, get_youtube_player_html
+from Functions.video_player_functions import youtube_link_to_id, get_video_link_by_pointer, get_youtube_player_html, change_video_completion_status
 from Functions.caption_editor_functions import request_captions_by_video_id, save_captions_to_db
 from Resources.css import css
 from Resources.js import yt_init_js
@@ -99,13 +99,18 @@ def cancel_edit():
     return gr.update(visible=False)
 
 
+def change_completion_status(completion_status):
+    global next_video_pointer
+    change_video_completion_status(completion_status, next_video_pointer - 1)
+
+
 def get_next_components():
     global next_video_pointer
-    next_video_link = get_video_link_by_pointer(next_video_pointer)
-    next_video_pointer += 1
+    next_video_link, link_pointer = get_video_link_by_pointer(next_video_pointer)
+    next_video_pointer = link_pointer + 1
     if next_video_link is None:
-        next_video_link = get_video_link_by_pointer(0)
-        next_video_pointer = 1
+        next_video_link, link_pointer = get_video_link_by_pointer(0)
+        next_video_pointer = link_pointer + 1
 
     try:
         next_video_id = youtube_link_to_id(next_video_link)
@@ -155,6 +160,7 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
                 wrap=True
             )
             add_entry_button = gr.Button(get_string("add_entry_button"), variant="secondary")
+            editing_complete_checkbox = gr.Checkbox(label=get_string("editing_complete_checkbox"))
 
     with gr.Row():
         with gr.Group(visible=False) as editing_panel:
@@ -209,6 +215,11 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         fn=on_row_select,
         inputs=[caption_editor],
         outputs=[editing_panel, start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
+    )
+
+    editing_complete_checkbox.input(
+        fn=change_completion_status,
+        inputs=editing_complete_checkbox
     )
 
     add_entry_button.click(

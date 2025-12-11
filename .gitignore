@@ -83,6 +83,7 @@ http-client.private.env.json
 .idea/ApifoxUploaderProjectSetting.xml
 
 # Manually added
+video_loader.py
 Resources/upload.py
 Resources/users.json
 Resources/key.json
