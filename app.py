@@ -108,17 +108,18 @@ def change_completion_status(completion_status):
 
 def get_next_components():
     global next_video_pointer
-    next_video_link = get_video_link_by_pointer(next_video_pointer)
-    next_video_pointer = (next_video_pointer + 1) % n_videos
-
-    for i in range(n_videos):
-        if next_video_link is not None:
-            break
+    if next_video_pointer != -1:
         next_video_link = get_video_link_by_pointer(next_video_pointer)
         next_video_pointer = (next_video_pointer + 1) % n_videos
-    if next_video_link is None:
-        next_video_link = placeholder_link
-        next_video_pointer = -1
+
+        for i in range(n_videos):
+            if next_video_link is not None:
+                break
+            next_video_link = get_video_link_by_pointer(next_video_pointer)
+            next_video_pointer = (next_video_pointer + 1) % n_videos
+        if next_video_link is None:
+            next_video_link = placeholder_link
+            next_video_pointer = -1
 
     try:
         next_video_id = youtube_link_to_id(next_video_link)
