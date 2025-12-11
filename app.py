@@ -198,6 +198,10 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         fn=get_next_components,
         outputs=[caption_editor, current_video_id]
     )
+    next_video_button.click(
+        fn=lambda: False,
+        outputs=editing_complete_checkbox
+    )
 
     current_video_id.change(
         fn=None,

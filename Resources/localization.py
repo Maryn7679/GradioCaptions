@@ -14,6 +14,7 @@ STRINGS = {
         # Main interface
         "next_button": "Finish this video and go to next",
         "add_entry_button": "Add Entry",
+        "editing_complete_checkbox": "Captions for this video are complete",
         
         # Table headers
         "header_start": "Start",
@@ -51,7 +52,8 @@ STRINGS = {
         # Main interface
         "next_button": "Завершити відео і перейти до наступного",
         "add_entry_button": "Додати субтитр",
-        
+        "editing_complete_checkbox": "Розмітка цього відео готова",
+
         # Table headers
         "header_start": "Початок",
         "header_text": "Текст",
