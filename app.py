@@ -105,7 +105,11 @@ def cancel_edit():
 
 def change_completion_status(completion_status):
     global next_video_pointer
-    change_video_completion_status(completion_status, (next_video_pointer + n_videos - 1) % n_videos)
+    try:
+        change_video_completion_status(completion_status, (next_video_pointer + n_videos - 1) % n_videos)
+    except Exception as e:
+        return gr.Error(f"{get_string('error')} {str(e)}")
+    return gr.Info(f'{get_string("change_video_completion_status_success")}')
 
 
 def get_next_components(show_incomplete_only):
@@ -193,7 +197,7 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
                 save_entry_button = gr.Button(get_string("save_entry_button"), variant="primary")
                 cancel_button = gr.Button(get_string("cancel_button"), variant="secondary")
 
-    save_result = gr.Markdown()
+    info_window = gr.Markdown()
 
     main_page.load(
         fn=get_next_components,
@@ -218,6 +222,11 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         outputs=editing_complete_checkbox
     )
 
+    show_incomplete_only_checkbox.input(
+        fn=lambda: gr.Info(get_string("show_incomplete_only_change")),
+        outputs=info_window
+    )
+
     current_video_id.change(
         fn=None,
         inputs=current_video_id,
@@ -238,7 +247,8 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
 
     editing_complete_checkbox.input(
         fn=change_completion_status,
-        inputs=editing_complete_checkbox
+        inputs=editing_complete_checkbox,
+        outputs=info_window
     )
 
     add_entry_button.click(
@@ -250,7 +260,7 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         fn=save_entry,
         inputs=[caption_editor, start_time_input, text_input, end_time_input,
                 selected_row_idx, current_video_id],
-        outputs=[caption_editor, editing_panel, save_result]
+        outputs=[caption_editor, editing_panel, info_window]
     )
 
     insert_start_time_button.click(

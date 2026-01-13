@@ -43,6 +43,8 @@ STRINGS = {
         "invalid_time_format": "Invalid time format:",
         "error": "Error:",
         "all_videos_transcribed": "Save cancelled: All videos transcribed",
+        "change_video_completion_status_success": "Video completion status successfully changed",
+        "show_incomplete_only_change": "List of accessible videos successfully changed"
     },
     "uk": {
         # Header and login
@@ -83,6 +85,8 @@ STRINGS = {
         "invalid_time_format": "Невірний формат часу:",
         "error": "Помилка:",
         "all_videos_transcribed": "Відміна збереження: Усі відео розмічено",
+        "change_video_completion_status_success": "Статус відео успішно змінено",
+        "show_incomplete_only_change": "Список доступних відео успішно змінено"
     }
 }
 
