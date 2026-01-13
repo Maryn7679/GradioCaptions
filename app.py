@@ -110,27 +110,26 @@ def change_completion_status(completion_status):
 
 def get_next_components(show_incomplete_only):
     global next_video_pointer
-    if show_incomplete_only:
-        if next_video_pointer != -1:
+    if next_video_pointer != -1:
+        next_video_link = get_video_link_by_pointer(next_video_pointer, show_incomplete_only)
+        next_video_pointer = (next_video_pointer + 1) % n_videos
+
+        for i in range(n_videos + 1):
+            if next_video_link is not None:
+                break
             next_video_link = get_video_link_by_pointer(next_video_pointer, show_incomplete_only)
             next_video_pointer = (next_video_pointer + 1) % n_videos
+        if next_video_link is None:
+            next_video_link = placeholder_link
+            next_video_pointer = -1
 
-            for i in range(n_videos + 1):
-                if next_video_link is not None:
-                    break
-                next_video_link = get_video_link_by_pointer(next_video_pointer, show_incomplete_only)
-                next_video_pointer = (next_video_pointer + 1) % n_videos
-            if next_video_link is None:
-                next_video_link = placeholder_link
-                next_video_pointer = -1
-
-        try:
-            next_video_id = youtube_link_to_id(next_video_link)
-            next_captions = request_captions_by_video_id(next_video_id)
-            return next_captions, next_video_id
-        except (ValueError, Exception) as e:
-            empty_captions = pd.DataFrame(columns=["Start", "Text", "End"])
-            return empty_captions, "error"
+    try:
+        next_video_id = youtube_link_to_id(next_video_link)
+        next_captions = request_captions_by_video_id(next_video_id)
+        return next_captions, next_video_id
+    except (ValueError, Exception) as e:
+        empty_captions = pd.DataFrame(columns=["Start", "Text", "End"])
+        return empty_captions, "error"
 
 
 (start_captions, start_video_id) = get_next_components(True)
