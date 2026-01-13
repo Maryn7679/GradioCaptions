@@ -108,31 +108,32 @@ def change_completion_status(completion_status):
     change_video_completion_status(completion_status, (next_video_pointer + n_videos - 1) % n_videos)
 
 
-def get_next_components():
+def get_next_components(show_incomplete_only):
     global next_video_pointer
-    if next_video_pointer != -1:
-        next_video_link = get_video_link_by_pointer(next_video_pointer)
-        next_video_pointer = (next_video_pointer + 1) % n_videos
-
-        for i in range(n_videos + 1):
-            if next_video_link is not None:
-                break
-            next_video_link = get_video_link_by_pointer(next_video_pointer)
+    if show_incomplete_only:
+        if next_video_pointer != -1:
+            next_video_link = get_video_link_by_pointer(next_video_pointer, show_incomplete_only)
             next_video_pointer = (next_video_pointer + 1) % n_videos
-        if next_video_link is None:
-            next_video_link = placeholder_link
-            next_video_pointer = -1
 
-    try:
-        next_video_id = youtube_link_to_id(next_video_link)
-        next_captions = request_captions_by_video_id(next_video_id)
-        return next_captions, next_video_id
-    except (ValueError, Exception) as e:
-        empty_captions = pd.DataFrame(columns=["Start", "Text", "End"])
-        return empty_captions, "error"
+            for i in range(n_videos + 1):
+                if next_video_link is not None:
+                    break
+                next_video_link = get_video_link_by_pointer(next_video_pointer, show_incomplete_only)
+                next_video_pointer = (next_video_pointer + 1) % n_videos
+            if next_video_link is None:
+                next_video_link = placeholder_link
+                next_video_pointer = -1
+
+        try:
+            next_video_id = youtube_link_to_id(next_video_link)
+            next_captions = request_captions_by_video_id(next_video_id)
+            return next_captions, next_video_id
+        except (ValueError, Exception) as e:
+            empty_captions = pd.DataFrame(columns=["Start", "Text", "End"])
+            return empty_captions, "error"
 
 
-(start_captions, start_video_id) = get_next_components()
+(start_captions, start_video_id) = get_next_components(True)
 
 with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
     user_state = gr.State("anonymous_user")
@@ -160,6 +161,9 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         with gr.Column(scale=2, min_width=600):
             video_embed = gr.HTML(value=get_youtube_player_html())
             next_video_button = gr.Button(get_string("next_button"), key="next_video")
+            show_incomplete_only_checkbox = gr.Checkbox(label=get_string("show_incomplete_only_checkbox"),
+                                                        value=True)
+
         with gr.Column(scale=1, min_width=200):
             caption_editor = gr.DataFrame(
                 interactive=False,
@@ -207,6 +211,7 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
 
     next_video_button.click(
         fn=get_next_components,
+        inputs=show_incomplete_only_checkbox,
         outputs=[caption_editor, current_video_id]
     )
     next_video_button.click(

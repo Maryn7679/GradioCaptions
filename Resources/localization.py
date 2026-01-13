@@ -12,9 +12,10 @@ STRINGS = {
         "log_in_button": "Log in",
         
         # Main interface
-        "next_button": "Finish this video and go to next",
+        "next_button": "Go to next video",
         "add_entry_button": "Add Entry",
         "editing_complete_checkbox": "Captions for this video are complete",
+        "show_incomplete_only_checkbox": "Only show videos with incomplete captions",
         
         # Table headers
         "header_start": "Start",
@@ -51,9 +52,10 @@ STRINGS = {
         "log_in_button": "Увійти",
         
         # Main interface
-        "next_button": "Завершити відео і перейти до наступного",
+        "next_button": "Перейти до наступного відео",
         "add_entry_button": "Додати субтитр",
         "editing_complete_checkbox": "Розмітка цього відео готова",
+        "show_incomplete_only_checkbox": "Показувати лише відео із незавершеною розміткою",
 
         # Table headers
         "header_start": "Початок",

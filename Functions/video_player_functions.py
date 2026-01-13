@@ -25,9 +25,9 @@ def get_video_embed_by_id(video_id):
     return video_id
 
 
-def get_video_link_by_pointer(pointer):
+def get_video_link_by_pointer(pointer, show_incomplete_only):
     video = default_app.database().child("videos").child(str(pointer)).get().val()
-    if video["complete"]:
+    if video["complete"] and show_incomplete_only:
         return None
     return video["url"]
 
