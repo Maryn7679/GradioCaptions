@@ -104,12 +104,15 @@ def cancel_edit():
 
 
 def change_completion_status(completion_status):
+    if user == "anonymous_user":
+        return gr.Warning(get_string("please_sign_in"))
+
     global next_video_pointer
     try:
         change_video_completion_status(completion_status, (next_video_pointer + n_videos - 1) % n_videos)
+        return gr.Info(get_string("change_video_completion_status_success"))
     except Exception as e:
         return gr.Error(f"{get_string('error')} {str(e)}")
-    return gr.Info(f'{get_string("change_video_completion_status_success")}')
 
 
 def get_next_components(show_incomplete_only):
