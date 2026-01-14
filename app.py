@@ -103,6 +103,15 @@ def cancel_edit():
     return gr.update(visible=False)
 
 
+def update_speed_buttons(selected_speed):
+    """Return updates for all speed buttons, highlighting the selected one"""
+    speeds = [0.25, 0.5, 0.75, 1, 2]
+    return [
+        gr.update(variant="primary" if speed == selected_speed else "secondary")
+        for speed in speeds
+    ]
+
+
 def change_completion_status(completion_status):
     if user == "anonymous_user":
         return gr.Warning(get_string("please_sign_in"))
@@ -166,9 +175,27 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
     with gr.Row():
         with gr.Column(scale=2, min_width=600):
             video_embed = gr.HTML(value=get_youtube_player_html())
-            next_video_button = gr.Button(get_string("next_button"), key="next_video")
-            show_incomplete_only_checkbox = gr.Checkbox(label=get_string("show_incomplete_only_checkbox"),
-                                                        value=True)
+
+            with gr.Group():
+                gr.Markdown(f"### {get_string('playback_controls_title')}")
+                with gr.Row():
+                    seek_back_1s_btn = gr.Button(get_string("seek_back_1s"), size="sm", min_width=60)
+                    seek_back_100ms_btn = gr.Button(get_string("seek_back_100ms"), size="sm", min_width=80)
+                    play_pause_btn = gr.Button(get_string("play_button"), size="sm", min_width=80, variant="primary")
+                    seek_forward_100ms_btn = gr.Button(get_string("seek_forward_100ms"), size="sm", min_width=80)
+                    seek_forward_1s_btn = gr.Button(get_string("seek_forward_1s"), size="sm", min_width=60)
+                gr.Markdown(f"**{get_string('speed_label')}**")
+                with gr.Row():
+                    speed_025_btn = gr.Button("0.25x", size="sm", min_width=60)
+                    speed_05_btn = gr.Button("0.5x", size="sm", min_width=60)
+                    speed_075_btn = gr.Button("0.75x", size="sm", min_width=60)
+                    speed_1_btn = gr.Button("1x", size="sm", min_width=60, variant="primary")
+                    speed_2_btn = gr.Button("2x", size="sm", min_width=60)
+
+            with gr.Row():
+                next_video_button = gr.Button(get_string("next_button"), key="next_video")
+                show_incomplete_only_checkbox = gr.Checkbox(label=get_string("show_incomplete_only_checkbox"),
+                                                            value=True)
 
         with gr.Column(scale=1, min_width=200):
             caption_editor = gr.DataFrame(
@@ -276,5 +303,62 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
     )
 
     cancel_button.click(fn=cancel_edit, outputs=[editing_panel])
+
+    # Playback control handlers
+    seek_back_1s_btn.click(
+        fn=None, inputs=None, outputs=None,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.seekTo(Math.max(0, window.ytPlayer.getCurrentTime() - 1), true); } }"
+    )
+    seek_back_100ms_btn.click(
+        fn=None, inputs=None, outputs=None,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.seekTo(Math.max(0, window.ytPlayer.getCurrentTime() - 0.1), true); } }"
+    )
+    seek_forward_100ms_btn.click(
+        fn=None, inputs=None, outputs=None,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.seekTo(window.ytPlayer.getCurrentTime() + 0.1, true); } }"
+    )
+    seek_forward_1s_btn.click(
+        fn=None, inputs=None, outputs=None,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.seekTo(window.ytPlayer.getCurrentTime() + 1, true); } }"
+    )
+    play_pause_btn.click(
+        fn=None, inputs=None, outputs=play_pause_btn,
+        js=f"""() => {{
+            if (window.ytPlayer) {{
+                const state = window.ytPlayer.getPlayerState();
+                if (state === 1) {{
+                    window.ytPlayer.pauseVideo();
+                    return "{get_string('play_button')}";
+                }} else {{
+                    window.ytPlayer.playVideo();
+                    return "{get_string('pause_button')}";
+                }}
+            }}
+            return "{get_string('play_button')}";
+        }}"""
+    )
+
+    # Speed control handlers
+    speed_outputs = [speed_025_btn, speed_05_btn, speed_075_btn, speed_1_btn, speed_2_btn]
+    speed_025_btn.click(
+        fn=lambda: update_speed_buttons(0.25), outputs=speed_outputs,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.setPlaybackRate(0.25); } }"
+    )
+    speed_05_btn.click(
+        fn=lambda: update_speed_buttons(0.5), outputs=speed_outputs,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.setPlaybackRate(0.5); } }"
+    )
+    speed_075_btn.click(
+        fn=lambda: update_speed_buttons(0.75), outputs=speed_outputs,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.setPlaybackRate(0.75); } }"
+    )
+    speed_1_btn.click(
+        fn=lambda: update_speed_buttons(1), outputs=speed_outputs,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.setPlaybackRate(1); } }"
+    )
+    speed_2_btn.click(
+        fn=lambda: update_speed_buttons(2), outputs=speed_outputs,
+        js="() => { if (window.ytPlayer) { window.ytPlayer.setPlaybackRate(2); } }"
+    )
 
 main_page.launch(share=True)
