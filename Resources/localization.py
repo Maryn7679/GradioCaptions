@@ -34,6 +34,16 @@ STRINGS = {
         "add_entry_button_form": "Add Entry",
         "cancel_button": "Cancel",
         
+        # Playback controls
+        "playback_controls_title": "Playback Controls",
+        "seek_back_1s": "-1s",
+        "seek_back_100ms": "-100ms",
+        "play_button": "Play",
+        "pause_button": "Pause",
+        "seek_forward_100ms": "+100ms",
+        "seek_forward_1s": "+1s",
+        "speed_label": "Speed:",
+
         # Messages
         "please_sign_in": "Please sign in to save changes",
         "start_less_than_end": "Start time must be less than end time",
@@ -76,6 +86,16 @@ STRINGS = {
         "add_entry_button_form": "Додати запис",
         "cancel_button": "Скасувати",
         
+        # Playback controls
+        "playback_controls_title": "Керування відтворенням",
+        "seek_back_1s": "-1с",
+        "seek_back_100ms": "-100мс",
+        "play_button": "Грати",
+        "pause_button": "Пауза",
+        "seek_forward_100ms": "+100мс",
+        "seek_forward_1s": "+1с",
+        "speed_label": "Швидкість:",
+
         # Messages
         "please_sign_in": "Будь ласка, увійдіть, щоб зберегти зміни",
         "start_less_than_end": "Час початку повинен бути менше часу кінця",
