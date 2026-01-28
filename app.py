@@ -28,43 +28,30 @@ def on_row_select(df, evt: gr.SelectData):
         if row_idx < len(df):
             row = df.iloc[row_idx]
             return (
-                gr.update(visible=True),  # editing_panel
                 gr.update(value=float(row['Start'])),  # start_time
                 gr.update(value=str(row['Text'])),  # text_input
                 gr.update(value=float(row['End'])),  # end_time
                 gr.update(value=row_idx),  # selected_row_idx
                 gr.update(value=get_string("update_entry_button"))  # save_entry_button
             )
-    return gr.update(visible=False), "", "", "", -1, get_string("save_entry_button")
-
-
-def show_add_entry_form():
-    """Show editing panel for adding new entry"""
-    return (
-        gr.update(visible=True),  # editing_panel
-        gr.update(value=0.0),  # start_time
-        gr.update(value=""),  # text_input
-        gr.update(value=0.0),  # end_time
-        gr.update(value=-1),  # selected_row_idx (-1 means new entry)
-        gr.update(value=get_string("add_entry_button_form"))  # save_entry_button
-    )
+    return gr.update(value=0.0), gr.update(value=""), gr.update(value=0.0), -1, get_string("save_entry_button")
 
 
 def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
     """Save or update a caption entry"""
     if user == "anonymous_user":
-        return df, gr.update(visible=True), gr.Warning(get_string("please_sign_in"))
+        return df, gr.Warning(get_string("please_sign_in"))
     if next_video_pointer == -1:
-        return df, gr.update(visible=True), gr.Warning(get_string("all_videos_transcribed"))
+        return df, gr.Warning(get_string("all_videos_transcribed"))
     try:
         start_time = float(start_time)
         end_time = float(end_time)
 
         if start_time >= end_time:
-            return df, gr.update(visible=True), gr.Warning(get_string("start_less_than_end"))
+            return df, gr.Warning(get_string("start_less_than_end"))
 
         if not text.strip():
-            return df, gr.update(visible=True), gr.Warning(get_string("text_cannot_be_empty"))
+            return df, gr.Warning(get_string("text_cannot_be_empty"))
 
         df_copy = df.copy()
 
@@ -88,19 +75,24 @@ def save_entry(df, start_time, text, end_time, selected_row_idx, video_id):
 
         return (
             df_copy,
-            gr.update(visible=False),  # Hide panel on success
             gr.Info(f"{save_result}")
         )
 
     except ValueError as e:
-        return df, gr.update(visible=True), gr.Warning(f"{get_string('invalid_time_format')} {str(e)}")
+        return df, gr.Warning(f"{get_string('invalid_time_format')} {str(e)}")
     except Exception as e:
-        return df, gr.update(visible=True), gr.Error(f"{get_string('error')} {str(e)}")
+        return df, gr.Error(f"{get_string('error')} {str(e)}")
 
 
-def cancel_edit():
-    """Cancel editing and hide the form"""
-    return gr.update(visible=False)
+def clear_form():
+    """Clear the editing form"""
+    return (
+        gr.update(value=0.0),  # start_time
+        gr.update(value=""),  # text_input
+        gr.update(value=0.0),  # end_time
+        gr.update(value=-1),  # selected_row_idx
+        gr.update(value=get_string("save_entry_button"))  # save_entry_button
+    )
 
 
 def update_speed_buttons(selected_speed):
@@ -172,10 +164,12 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         with gr.Column(scale=1, min_width=50):
             gr.LoginButton(value=get_string("log_in_button"), logout_value=get_string("log_in_button"))
 
+    # Top row: Video player (left) + Controls & Editing panel (right)
     with gr.Row():
         with gr.Column(scale=2, min_width=600):
             video_embed = gr.HTML(value=get_youtube_player_html())
 
+        with gr.Column(scale=1, min_width=300):
             with gr.Group():
                 gr.Markdown(f"### {get_string('playback_controls_title')}")
                 with gr.Row():
@@ -192,40 +186,37 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
                     speed_1_btn = gr.Button("1x", size="sm", min_width=60, variant="primary")
                     speed_2_btn = gr.Button("2x", size="sm", min_width=60)
 
-            with gr.Row():
-                next_video_button = gr.Button(get_string("next_button"), key="next_video")
-                show_incomplete_only_checkbox = gr.Checkbox(label=get_string("show_incomplete_only_checkbox"),
-                                                            value=True)
+            with gr.Group():
+                gr.Markdown(f"### {get_string('edit_caption_title')}")
+                with gr.Row():
+                    start_time_input = gr.Textbox(label=get_string("start_time_label"), value="0.000", interactive=False)
+                    insert_start_time_button = gr.Button(get_string("insert_current_time"))
+                with gr.Row():
+                    text_input = gr.Textbox(label=get_string("caption_text_label"), placeholder=get_string("caption_text_placeholder"))
+                with gr.Row():
+                    end_time_input = gr.Textbox(label=get_string("end_time_label"), value="0.000", interactive=False)
+                    insert_end_time_button = gr.Button(get_string("insert_current_time"))
+                with gr.Row():
+                    save_entry_button = gr.Button(get_string("save_entry_button"), variant="primary")
+                    clear_button = gr.Button(get_string("cancel_button"), variant="secondary")
 
-        with gr.Column(scale=1, min_width=200):
+    # Bottom row: Caption table (left) + Navigation & checkboxes (right)
+    with gr.Row():
+        with gr.Column(scale=2):
             caption_editor = gr.DataFrame(
                 interactive=False,
                 elem_id="tbl",
                 datatype=["number", "str", "number"],
                 col_count=(3, "fixed"),
-                column_widths=["20%", "60%", "20%"],
+                column_widths=["15%", "70%", "15%"],
                 headers=[get_string("header_start"), get_string("header_text"), get_string("header_end")],
                 wrap=True
             )
-            add_entry_button = gr.Button(get_string("add_entry_button"), variant="secondary")
+
+        with gr.Column(scale=1, min_width=200):
+            next_video_button = gr.Button(get_string("next_button"), key="next_video", variant="primary")
+            show_incomplete_only_checkbox = gr.Checkbox(label=get_string("show_incomplete_only_checkbox"), value=True)
             editing_complete_checkbox = gr.Checkbox(label=get_string("editing_complete_checkbox"))
-
-    with gr.Row():
-        with gr.Group(visible=False) as editing_panel:
-            gr.Markdown(f"### {get_string('edit_caption_title')}")
-            with gr.Row(equal_height=False):
-                with gr.Column():
-                    start_time_input = gr.Textbox(label=get_string("start_time_label"), value="0.000", interactive=False)
-                    insert_start_time_button = gr.Button(get_string("insert_current_time"))
-                with gr.Column():
-                    text_input = gr.Textbox(label=get_string("caption_text_label"), placeholder=get_string("caption_text_placeholder"))
-                with gr.Column():
-                    end_time_input = gr.Textbox(label=get_string("end_time_label"), value="0.000", interactive=False)
-                    insert_end_time_button = gr.Button(get_string("insert_current_time"))
-
-            with gr.Row(equal_height=False):
-                save_entry_button = gr.Button(get_string("save_entry_button"), variant="primary")
-                cancel_button = gr.Button(get_string("cancel_button"), variant="secondary")
 
     info_window = gr.Markdown()
 
@@ -251,6 +242,10 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         fn=lambda: False,
         outputs=editing_complete_checkbox
     )
+    next_video_button.click(
+        fn=clear_form,
+        outputs=[start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
+    )
 
     show_incomplete_only_checkbox.input(
         fn=lambda: gr.Info(get_string("show_incomplete_only_change")),
@@ -272,7 +267,7 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
     caption_editor.select(
         fn=on_row_select,
         inputs=[caption_editor],
-        outputs=[editing_panel, start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
+        outputs=[start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
     )
 
     editing_complete_checkbox.input(
@@ -281,16 +276,11 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         outputs=info_window
     )
 
-    add_entry_button.click(
-        fn=show_add_entry_form,
-        outputs=[editing_panel, start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
-    )
-
     save_entry_button.click(
         fn=save_entry,
         inputs=[caption_editor, start_time_input, text_input, end_time_input,
                 selected_row_idx, current_video_id],
-        outputs=[caption_editor, editing_panel, info_window]
+        outputs=[caption_editor, info_window]
     )
 
     insert_start_time_button.click(
@@ -302,7 +292,10 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
         js="() => window.ytPlayer ? +window.ytPlayer.getCurrentTime().toFixed(3) : 0"
     )
 
-    cancel_button.click(fn=cancel_edit, outputs=[editing_panel])
+    clear_button.click(
+        fn=clear_form,
+        outputs=[start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
+    )
 
     # Playback control handlers
     seek_back_1s_btn.click(
