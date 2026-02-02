@@ -204,14 +204,16 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
                 gr.Markdown(f"### {get_string('edit_caption_title')}")
                 gr.Markdown(f"**{get_string('start_time_label')}**")
                 with gr.Row():
-                    start_time_input = gr.Textbox(show_label=False, value="0.000", interactive=False)
-                    insert_start_time_button = gr.Button(get_string("insert_current_time"))
+                    start_time_input = gr.Textbox(show_label=False, value="0.000", interactive=False, scale=0, min_width=100)
+                    insert_start_time_button = gr.Button(get_string("insert_time_button"), scale=1)
+                    goto_start_time_button = gr.Button(get_string("goto_time_button"), scale=1)
                 gr.Markdown(f"**{get_string('caption_text_label')}**")
                 text_input = gr.Textbox(show_label=False, placeholder=get_string("caption_text_placeholder"))
                 gr.Markdown(f"**{get_string('end_time_label')}**")
                 with gr.Row():
-                    end_time_input = gr.Textbox(show_label=False, value="0.000", interactive=False)
-                    insert_end_time_button = gr.Button(get_string("insert_current_time"))
+                    end_time_input = gr.Textbox(show_label=False, value="0.000", interactive=False, scale=0, min_width=100)
+                    insert_end_time_button = gr.Button(get_string("insert_time_button"), scale=1)
+                    goto_end_time_button = gr.Button(get_string("goto_time_button"), scale=1)
                 with gr.Row():
                     save_entry_button = gr.Button(get_string("save_entry_button"), variant="primary")
                     preview_button = gr.Button(get_string("preview_button"), variant="secondary")
@@ -307,6 +309,15 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
     insert_end_time_button.click(
         fn=None, inputs=None, outputs=end_time_input,
         js="() => window.ytPlayer ? +window.ytPlayer.getCurrentTime().toFixed(3) : 0"
+    )
+
+    goto_start_time_button.click(
+        fn=None, inputs=[start_time_input], outputs=None,
+        js="(time) => { if (window.ytPlayer) { window.ytPlayer.seekTo(parseFloat(time), true); window.ytPlayer.pauseVideo(); } }"
+    )
+    goto_end_time_button.click(
+        fn=None, inputs=[end_time_input], outputs=None,
+        js="(time) => { if (window.ytPlayer) { window.ytPlayer.seekTo(parseFloat(time), true); window.ytPlayer.pauseVideo(); } }"
     )
 
     clear_button.click(
