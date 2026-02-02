@@ -192,7 +192,8 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
                 with gr.Row():
                     start_time_input = gr.Textbox(show_label=False, value="0.000", interactive=False)
                     insert_start_time_button = gr.Button(get_string("insert_current_time"))
-                text_input = gr.Textbox(label=get_string("caption_text_label"), placeholder=get_string("caption_text_placeholder"))
+                gr.Markdown(f"**{get_string('caption_text_label')}**")
+                text_input = gr.Textbox(show_label=False, placeholder=get_string("caption_text_placeholder"))
                 gr.Markdown(f"**{get_string('end_time_label')}**")
                 with gr.Row():
                     end_time_input = gr.Textbox(show_label=False, value="0.000", interactive=False)
