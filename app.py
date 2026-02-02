@@ -95,6 +95,20 @@ def clear_form():
     )
 
 
+def validate_preview(start_time, end_time):
+    """Validate times for preview playback"""
+    try:
+        start = float(start_time)
+        end = float(end_time)
+        if start == end:
+            return None, gr.Warning(get_string("preview_times_equal"))
+        if start >= end:
+            return None, gr.Warning(get_string("preview_invalid_times"))
+        return (start, end), None
+    except ValueError:
+        return None, gr.Warning(get_string("invalid_time_format"))
+
+
 def update_speed_buttons(selected_speed):
     """Return updates for all speed buttons, highlighting the selected one"""
     speeds = [0.25, 0.5, 0.75, 1, 2]
@@ -200,6 +214,7 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
                     insert_end_time_button = gr.Button(get_string("insert_current_time"))
                 with gr.Row():
                     save_entry_button = gr.Button(get_string("save_entry_button"), variant="primary")
+                    preview_button = gr.Button(get_string("preview_button"), variant="secondary")
                     clear_button = gr.Button(get_string("cancel_button"), variant="secondary")
 
     # Bottom row: Caption table (left) + Navigation & checkboxes (right)
@@ -297,6 +312,30 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
     clear_button.click(
         fn=clear_form,
         outputs=[start_time_input, text_input, end_time_input, selected_row_idx, save_entry_button]
+    )
+
+    preview_button.click(
+        fn=validate_preview,
+        inputs=[start_time_input, end_time_input],
+        outputs=[gr.State(), info_window]
+    ).success(
+        fn=None,
+        inputs=[start_time_input, end_time_input],
+        js="""(startTime, endTime) => {
+            if (window.ytPlayer) {
+                const start = parseFloat(startTime);
+                const end = parseFloat(endTime);
+                window.ytPlayer.seekTo(start, true);
+                window.ytPlayer.playVideo();
+                if (window.previewInterval) clearInterval(window.previewInterval);
+                window.previewInterval = setInterval(() => {
+                    if (window.ytPlayer.getCurrentTime() >= end) {
+                        window.ytPlayer.pauseVideo();
+                        clearInterval(window.previewInterval);
+                    }
+                }, 20);
+            }
+        }"""
     )
 
     # Playback control handlers

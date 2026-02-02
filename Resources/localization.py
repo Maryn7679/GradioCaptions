@@ -33,7 +33,10 @@ STRINGS = {
         "update_entry_button": "Update Entry",
         "add_entry_button_form": "Add Entry",
         "cancel_button": "Cancel",
-        
+        "preview_button": "Preview ▶",
+        "preview_times_equal": "Cannot preview: start and end times are equal",
+        "preview_invalid_times": "Cannot preview: start time must be less than end time",
+
         # Playback controls
         "playback_controls_title": "Playback Controls",
         "seek_back_1s": "-1s",
@@ -85,7 +88,10 @@ STRINGS = {
         "update_entry_button": "Оновити запис",
         "add_entry_button_form": "Додати запис",
         "cancel_button": "Скасувати",
-        
+        "preview_button": "Превʼю ▶",
+        "preview_times_equal": "Превʼю недоступне: час початку та кінця однакові",
+        "preview_invalid_times": "Превʼю недоступне: час початку має бути менше часу кінця",
+
         # Playback controls
         "playback_controls_title": "Керування відтворенням",
         "seek_back_1s": "-1с",
