@@ -188,13 +188,14 @@ with gr.Blocks(css=css, head=yt_init_js, fill_width=True) as main_page:
 
             with gr.Group():
                 gr.Markdown(f"### {get_string('edit_caption_title')}")
+                gr.Markdown(f"**{get_string('start_time_label')}**")
                 with gr.Row():
-                    start_time_input = gr.Textbox(label=get_string("start_time_label"), value="0.000", interactive=False)
+                    start_time_input = gr.Textbox(show_label=False, value="0.000", interactive=False)
                     insert_start_time_button = gr.Button(get_string("insert_current_time"))
+                text_input = gr.Textbox(label=get_string("caption_text_label"), placeholder=get_string("caption_text_placeholder"))
+                gr.Markdown(f"**{get_string('end_time_label')}**")
                 with gr.Row():
-                    text_input = gr.Textbox(label=get_string("caption_text_label"), placeholder=get_string("caption_text_placeholder"))
-                with gr.Row():
-                    end_time_input = gr.Textbox(label=get_string("end_time_label"), value="0.000", interactive=False)
+                    end_time_input = gr.Textbox(show_label=False, value="0.000", interactive=False)
                     insert_end_time_button = gr.Button(get_string("insert_current_time"))
                 with gr.Row():
                     save_entry_button = gr.Button(get_string("save_entry_button"), variant="primary")
