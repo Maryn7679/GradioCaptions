@@ -1,6 +1,7 @@
 import gradio as gr
 import pandas as pd
-from Functions.video_player_functions import youtube_link_to_id, get_video_link_by_pointer, get_youtube_player_html, change_video_completion_status
+from Functions.video_player_functions import (youtube_link_to_id, get_video_link_by_pointer, get_youtube_player_html,
+                                              change_video_completion_status, get_number_of_videos)
 from Functions.caption_editor_functions import request_captions_by_video_id, save_captions_to_db
 from Resources.css import css
 from Resources.js import yt_init_js
@@ -8,7 +9,7 @@ from Resources.localization import get_string
 
 next_video_pointer = 0
 user = "anonymous_user"
-n_videos = 21
+n_videos = get_number_of_videos()
 placeholder_link = "https://www.youtube.com/watch?v=wTQjwG2-ePA"
 
 

@@ -34,3 +34,7 @@ def get_video_link_by_pointer(pointer, show_incomplete_only):
 
 def change_video_completion_status(is_complete, video_pointer):
     default_app.database().child("videos").child(str(video_pointer)).child("complete").set(is_complete)
+
+
+def get_number_of_videos():
+    return len(default_app.database().child("videos").get().val())
