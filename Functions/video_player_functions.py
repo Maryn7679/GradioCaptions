@@ -38,5 +38,4 @@ def change_video_completion_status(is_complete, video_pointer):
 
 def get_number_of_videos():
     n_videos = len(default_app.database().child("videos").get().val())
-    print(n_videos)
     return n_videos
