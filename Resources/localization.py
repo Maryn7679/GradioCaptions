@@ -28,12 +28,16 @@ STRINGS = {
         "caption_text_label": "Caption Text",
         "caption_text_placeholder": "Enter caption text...",
         "end_time_label": "End Time (seconds)",
-        "insert_current_time": "Insert Video Current Time",
+        "insert_time_button": "Insert",
+        "goto_time_button": "Go to",
         "save_entry_button": "Save Entry",
         "update_entry_button": "Update Entry",
         "add_entry_button_form": "Add Entry",
         "cancel_button": "Cancel",
-        
+        "preview_button": "Preview ▶",
+        "preview_times_equal": "Cannot preview: start and end times are equal",
+        "preview_invalid_times": "Cannot preview: start time must be less than end time",
+
         # Playback controls
         "playback_controls_title": "Playback Controls",
         "seek_back_1s": "-1s",
@@ -80,12 +84,16 @@ STRINGS = {
         "caption_text_label": "Текст субтитру",
         "caption_text_placeholder": "Введіть текст субтитру...",
         "end_time_label": "Час кінця (секунди)",
-        "insert_current_time": "Вставити поточний час відео",
+        "insert_time_button": "Вставити",
+        "goto_time_button": "Перейти",
         "save_entry_button": "Зберегти запис",
         "update_entry_button": "Оновити запис",
         "add_entry_button_form": "Додати запис",
         "cancel_button": "Скасувати",
-        
+        "preview_button": "Превʼю ▶",
+        "preview_times_equal": "Превʼю недоступне: час початку та кінця однакові",
+        "preview_invalid_times": "Превʼю недоступне: час початку має бути менше часу кінця",
+
         # Playback controls
         "playback_controls_title": "Керування відтворенням",
         "seek_back_1s": "-1с",
